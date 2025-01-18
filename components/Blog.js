@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState } from "react"
 import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";
- import "react-markdown-editor-lite/lib/index.css";
+import "react-markdown-editor-lite/lib/index.css";
 
 export default function Blog({
   _id,
@@ -29,15 +29,15 @@ export default function Blog({
     const data = {
       title,
       slug,
-      blogcategory,
       description,
+      blogcategory,
       tags,
       status,
     };
     if (_id) {
-      await axios.put("/api/blogapi", { ...data, _id });
+      await axios.put('/api/blogapi', { ...data, _id })
     } else {
-      await axios.post("/api/blogapi", data);
+      await axios.post('/api/addblog', data)
     }
     setRedirect(true);
   }
@@ -46,10 +46,16 @@ export default function Blog({
     router.push("/");
     return null;
   }
+  // this function for every space in the speling will be.
+  const handleSlugChange = (ev) => {
+    const inputVal = ev.target.value;
+    const newSlug = inputVal.replace(/\s+/g, "-");
+    setslug(newSlug);
+  };
 
   return (
     <>
-      <from onSubmit={createProduct} className="addWebsiteform">
+      <form onSubmit={createProduct} className="addWebsiteform">
         <div className="w-100 flex flex-col flex-left mb-2">
           <label htmlFor="title">Title</label>
           <input
@@ -68,7 +74,7 @@ export default function Blog({
             type="text"
             id="slug"
             value={slug}
-            onChange={(e) => setslug(e.target.value)}
+            onChange={handleSlugChange}
             placeholder="Enter Slug url"
             required
           />
@@ -125,13 +131,23 @@ export default function Blog({
                           >
                             <code>{children}</code>
                           </pre>
-                          <button style={{position:'absolute', top: '0', right: '0', zIndex: '1' }}
-                          onClick={() => navigator.clipboard.writeText(children)}
-                          >copy code</button>
+                          <button
+                            style={{
+                              position: "absolute",
+                              top: "0",
+                              right: "0",
+                              zIndex: "1",
+                            }}
+                            onClick={() =>
+                              navigator.clipboard.writeText(children)
+                            }
+                          >
+                            copy code
+                          </button>
                         </div>
                       );
-                      } else {
-                        return <code {...props}>{children}</code>;
+                    } else {
+                      return <code {...props}>{children}</code>;
                     }
                   },
                 }}
@@ -189,7 +205,7 @@ export default function Blog({
             SAVE BLOG
           </button>
         </div>
-      </from>
+      </form>
     </>
   );
 }

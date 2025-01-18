@@ -1,5 +1,6 @@
 const { Schema, models, model } = require("mongoose");
 
+
 const BlogSchema = new Schema(
   {
     title: { type: String },
@@ -11,4 +12,8 @@ const BlogSchema = new Schema(
   },
   { timestamps: true } // this option will automatically manage createdat abc updatedat fileds
 );
-export const Blog = models.Blog || model("Blog", BlogSchema, "blogtest");
+ export const Blog = models.Blog || model("Blog", BlogSchema, "blogtest");
+
+
+
+

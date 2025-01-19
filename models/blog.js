@@ -1,19 +1,13 @@
-const { Schema, models, model } = require("mongoose");
+import mongoose from "mongoose";
 
+const blogSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    description: { type: String, required: true },
+    blogcategory: { type: String, required: true },
+    tags: { type: [String], required: true },
+    status: { type: String, required: true },
+});
 
-const BlogSchema = new Schema(
-  {
-    title: { type: String },
-    slug: { type: String, required: true },
-    description: { type: String },
-    blogcategory: [{ type: String }],
-    tags: [{ type: String }],
-    status: { type: String },
-  },
-  { timestamps: true } // this option will automatically manage createdat abc updatedat fileds
-);
- export const Blog = models.Blog || model("Blog", BlogSchema, "blogtest");
-
-
-
-
+const Blog = mongoose.models.Blog || mongoose.model("Blog", blogSchema);
+export default Blog;

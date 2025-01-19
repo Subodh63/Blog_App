@@ -1,83 +1,75 @@
 import Blog from "@/models/blog";
-import {
-    mongooseconnect
-} from "@/lib/mongoose";
+import { mongooseconnect } from "@/lib/mongoose";
 
 export default async function handle(req, res) {
-    // if authentication connect to Mongodb
     await mongooseconnect();
-    const {
-        method
-    } = req;
-    // data send or post data
-    if (method === "POST") {
-    const { title, slug, description, blogcategory, tags, status } = req.body;
+    const { method } = req;
 
-    // Basic validation
-    if (!title || !slug || !description || !blogcategory || !tags || !status) {
-        return res.status(400).json({ message: "Missing required fields" });
+    if (method === "POST") {
+        const { title, slug, description, blogcategory, tags, status } = req.body;
+
+        if (!title || !slug || !description || !blogcategory || !tags || !status) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        try {
+            const blogDoc = await Blog.create({
+                title,
+                slug,
+                description,
+                blogcategory,
+                tags,
+                status,
+            });
+            res.status(201).json(blogDoc);
+        } catch (error) {
+            if (error.code === 11000) {
+                res.status(400).json({ message: "Duplicate key error", field: error.keyValue });
+            } else {
+                console.error("Error creating blog:", error);
+                res.status(500).json({ message: "Internal Server Error" });
+            }
+        }
     }
 
-    try {
-        const blogDoc = await Blog.create({
-            title,
-            slug, 
-            description,
-            blogcategory,
-            tags,
-            status,
-        });
-        res.status(201).json(blogDoc);
-    } catch (error) {
-        if (error.code === 11000) {
-            // Handle duplicate key errors
-            res.status(400).json({ message: "Duplicate key error", field: error.keyValue });
-        } else {
-            console.error("Error creating blog:", error);
+    if (method === "GET") {
+        try {
+            if (req.query?.id) {
+                res.json(await Blog.findById(req.query.id));
+            } else {
+                res.json((await Blog.find()).reverse());
+            }
+        } catch (error) {
+            console.error("Error fetching blogs:", error);
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
-}
 
-    // data fetch or get
-    if (method === "GET") {
-        if (req.query?.id) {
-            req.json(await Blog.findId(req.query.id));
-        } else {
-            req.json((await Blog.find()).reverse());
+    if (method === "PUT") {
+        const { _id, title, slug, description, blogcategory, tags, status } = req.body;
+        try {
+            await Blog.updateOne(
+                { _id },
+                { title, slug, description, blogcategory, tags, status }
+            );
+            res.json(true);
+        } catch (error) {
+            console.error("Error updating blog:", error);
+            res.status(500).json({ message: "Internal Server Error" });
         }
     }
-    // update
-    if (method === "PUT") {
-        const {
-            _id,
-            title,
-            slug,
-            description,
-            blogcategory,
-            tags,
-            status
-        } = req.body;
-        await Blog.updateOne({
-            _id
-        }, {
-            title,
-            slug,
-            description,
-            blogcategory,
-            tags,
-            status,
-        });
-        res.json(true);
-    }
 
-    // delete one blog
     if (method === "DELETE") {
-        if (req.query?.id) {
-            await Blog.deleteOne({ _id: req.query.id });
-            res.json(true);
-
-            
+        try {
+            if (req.query?.id) {
+                await Blog.deleteOne({ _id: req.query.id });
+                res.json(true);
+            } else {
+                res.status(400).json({ message: "Missing ID" });
+            }
+        } catch (error) {
+            console.error("Error deleting blog:", error);
+            res.status(500).json({ message: "Internal Server Error" });
         }
     }
 }

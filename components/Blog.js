@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react"
+import { useState } from "react";
 import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";
-import "react-markdown-editor-lite/lib/index.css";
+ import "react-markdown-editor-lite/lib/index.css";
 
 export default function Blog({
   _id,
@@ -29,15 +29,15 @@ export default function Blog({
     const data = {
       title,
       slug,
-      description,
       blogcategory,
+      description,
       tags,
       status,
     };
     if (_id) {
       await axios.put('/api/blogapi', { ...data, _id })
     } else {
-      await axios.post('/api/addblog', data)
+      await axios.post('/api/blogapi', data);
     }
     setRedirect(true);
   }
@@ -46,12 +46,12 @@ export default function Blog({
     router.push("/");
     return null;
   }
-  // this function for every space in the speling will be.
+// this function for every space in the speling will be.
   const handleSlugChange = (ev) => {
     const inputVal = ev.target.value;
     const newSlug = inputVal.replace(/\s+/g, "-");
-    setslug(newSlug);
-  };
+    setslug(newSlug); 
+  }
 
   return (
     <>
@@ -131,23 +131,13 @@ export default function Blog({
                           >
                             <code>{children}</code>
                           </pre>
-                          <button
-                            style={{
-                              position: "absolute",
-                              top: "0",
-                              right: "0",
-                              zIndex: "1",
-                            }}
-                            onClick={() =>
-                              navigator.clipboard.writeText(children)
-                            }
-                          >
-                            copy code
-                          </button>
+                          <button style={{position:'absolute', top: '0', right: '0', zIndex: '1' }}
+                          onClick={() => navigator.clipboard.writeText(children)}
+                          >copy code</button>
                         </div>
                       );
-                    } else {
-                      return <code {...props}>{children}</code>;
+                      } else {
+                        return <code {...props}>{children}</code>;
                     }
                   },
                 }}

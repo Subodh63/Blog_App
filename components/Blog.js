@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";
- import "react-markdown-editor-lite/lib/index.css";
+import "react-markdown-editor-lite/lib/index.css";
 
 export default function Blog({
   _id,
@@ -29,13 +29,13 @@ export default function Blog({
     const data = {
       title,
       slug,
-      blogcategory,
+      blogcategory, // This is now a single string
       description,
       tags,
       status,
     };
     if (_id) {
-      await axios.put('/api/blogapi', { ...data, _id })
+      await axios.put('/api/blogapi', { ...data, _id });
     } else {
       await axios.post('/api/blogapi', data);
     }
@@ -46,12 +46,13 @@ export default function Blog({
     router.push("/");
     return null;
   }
-// this function for every space in the speling will be.
+
+  // This function handles slug formatting (replaces spaces with dashes)
   const handleSlugChange = (ev) => {
     const inputVal = ev.target.value;
     const newSlug = inputVal.replace(/\s+/g, "-");
-    setslug(newSlug); 
-  }
+    setslug(newSlug);
+  };
 
   return (
     <>
@@ -86,67 +87,29 @@ export default function Blog({
           <select
             name="category"
             id="category"
-            value={blogcategory}
-            onChange={(e) =>
-              setBlogcategory(
-                Array.from(e.target.selectedOptions, (option) => option.value)
-              )
-            }
-            multiple
+            value={blogcategory} // Single value
+            onChange={(e) => setBlogcategory(e.target.value)} // Handle as single value
           >
-            <option value="htmlcssjs">Html, css & JavaScript</option>
+            <option value="htmlcssjs">Html, CSS & JavaScript</option>
             <option value="nextjs">Next Js, React Js</option>
             <option value="database">Database</option>
             <option value="deployment">Deployment</option>
           </select>
-          <p className="existingcategory flex gap-1 mt-1 mb-1">
-            selected: <span>Category</span>
-          </p>
         </div>
+
         {/* markdown description content */}
         <div className="description w-100 flex flex-col flex-left mb-2">
           <label htmlFor="description">Blog Content</label>
           <MarkdownEditor
             value={description}
             onChange={(ev) => setDescription(ev.text)}
-            style={{ width: "100%", height: "400px" }} // you can adjust the height as your device needed
+            style={{ width: "100%", height: "400px" }} // Adjust height as necessary
             renderHTML={(text) => (
-              <ReactMarkdown
-                components={{
-                  code: ({ node, inline, className, children, ...props }) => {
-                    const match = /language-(\w+)/.exec(className || "");
-                    if (inline) {
-                      return <code>{children}</code>;
-                    } else if (match) {
-                      return (
-                        <div style={{ position: "relative" }}>
-                          <pre
-                            style={{
-                              padding: "0",
-                              borderRadius: "5px",
-                              overflow: "auto",
-                              whiteSpace: "pre-wrap",
-                            }}
-                            {...props}
-                          >
-                            <code>{children}</code>
-                          </pre>
-                          <button style={{position:'absolute', top: '0', right: '0', zIndex: '1' }}
-                          onClick={() => navigator.clipboard.writeText(children)}
-                          >copy code</button>
-                        </div>
-                      );
-                      } else {
-                        return <code {...props}>{children}</code>;
-                    }
-                  },
-                }}
-              >
-                {text}
-              </ReactMarkdown>
+              <ReactMarkdown>{text}</ReactMarkdown>
             )}
           />
         </div>
+
         {/* tags */}
         <div className="w-100 flex flex-col flex-left mb-2">
           <label htmlFor="tags">Tags</label>
@@ -161,18 +124,16 @@ export default function Blog({
             }
             multiple
           >
-            <option value="html">Htmlt</option>
+            <option value="html">Html</option>
             <option value="css">Css</option>
             <option value="javascript">Javascript</option>
             <option value="nextjs">NextJs</option>
             <option value="reactjs">ReactJs</option>
             <option value="database">Database</option>
           </select>
-          <p className="existingcategory flex gap-1 mt-1 mb-1">
-            selected: <span>Tags</span>
-          </p>
         </div>
-        {/*  status */}
+
+        {/* status */}
         <div className="w-100 flex flex-col flex-left mb-2">
           <label htmlFor="status">Status</label>
           <select
@@ -185,10 +146,8 @@ export default function Blog({
             <option value="draft">Draft</option>
             <option value="publish">Publish</option>
           </select>
-          <p className="existingcategory flex gap-1 mt-1 mb-1">
-            selected: <span>Status</span>
-          </p>
         </div>
+
         {/* save Button */}
         <div className="w-100 mb-2">
           <button type="submit" className="w-100 addwebbtn flex-center">

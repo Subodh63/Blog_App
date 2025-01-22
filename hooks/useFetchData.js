@@ -1,36 +1,35 @@
 const { default: axios } = require("axios");
 const { useEffect, useState } = require("react");
 
-function useFetchData() {
+function useFetchData(apiEndPoint) {
   const [alldata, setAlldata] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
 
+  const fetchAllData = async () => {
+    try {
+      const res = await axios.get(apiEndPoint);
+      setAlldata(res.data);
+      setLoading(false); // Set loading to false after data is fetched
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false); // Set loading false even if there's an error
+    }
+  };
+
   useEffect(() => {
     if (initialLoad) {
-      // set initialload to false to prevent the api call on subsequent render
-
-      setInitialLoad(false);
-      setLoading(false); // set loading to false to show components initally
-      return; // exit useeffect
+      setInitialLoad(false); // Set initialLoad to false after the first render
+      setLoading(false); // Set loading to false to show components initially
+      return; // Exit early to avoid fetching data on the first render
     }
-    setLoading(true);
-    const fetchAllData = async () => {
-      try {
-        const res = await axios.get(apiEndPoint);
-        const alldata = res.data;
-        setAlldata(alldata);
-        setLoading(false); //set loading state to false after data is fatched
-      } catch (error) {
-        console.error("error fetching blog data", error);
-        setLoading(false); // set loading false even if ther's an error
-      }
-    };
-    // fetch blog data only if apiendpoint is exists
     if (apiEndPoint) {
+      setLoading(true); // Start loading before fetching data
       fetchAllData();
     }
-  }, [initialLoad, apiEndPoint]); // depends on initialload and apiendpoint to trigger api call.
+  }, [apiEndPoint, initialLoad]); // Only re-run effect if apiEndPoint or initialLoad changes
+
   return [alldata, loading];
 }
+
 export default useFetchData;

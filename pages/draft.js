@@ -9,55 +9,53 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import useFetchData from "@/hooks/useFetchData";
 import Dataloading from "@/components/Dataloading";
 
-export default function blogs() {
 
-    // Pagination
-    const [currentPage, setCurrentPage] = useState(1);
-    const [perPage] = useState(4);
-  
-    // Fetch blogs from API endpoint with hooks
-    const apiEndpoint = "/api/blogapi";
-    const [alldata, loading] = useFetchData(apiEndpoint);
-  
-    // Log data to check if it's fetched correctly
-    useEffect(() => {
-      console.log("Fetched Data:", alldata);
-    }, [alldata]);
-  
-    // Function to handle page change
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  
-    // Ensure alldata is always an array
-    const allBlogCount = Array.isArray(alldata) ? alldata.length : 0;
-  
-    const indexOfLastBlog = currentPage * perPage;
-    const indexOfFirstBlog = indexOfLastBlog - perPage;
-    const currentBlogs = Array.isArray(alldata) ? alldata.slice(indexOfFirstBlog, indexOfLastBlog) : [];
-  
-    // Filtering the Publish blogs
-    const publishedBlogs = currentBlogs.filter((ab) => ab.status === "publish");
-  
-    // console.log("Publish Blogs:", publishedBlogs); // Log filtered publish blogs
-  
-    const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(allBlogCount / perPage); i++) {
-      pageNumbers.push(i);
-    }
+export default function Draft() {
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage] = useState(4);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  // Fetch blogs from API endpoint with hooks
+  const apiEndpoint = "/api/blogapi";
+  const [alldata, loading] = useFetchData(apiEndpoint);
+
+  // Log data to check if it's fetched correctly
+  useEffect(() => {
+    console.log("Fetched Data:", alldata);
+  }, [alldata]);
+
+  // Function to handle page change
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Ensure alldata is always an array
+  const allBlogCount = Array.isArray(alldata) ? alldata.length : 0;
+
+  const indexOfLastBlog = currentPage * perPage;
+  const indexOfFirstBlog = indexOfLastBlog - perPage;
+  const currentBlogs = Array.isArray(alldata) ? alldata.slice(indexOfFirstBlog, indexOfLastBlog) : [];
+
+  // Filtering the draft blogs
+  const draftBlogs = currentBlogs.filter((ab) => ab.status === "draft");
+
+  console.log("Draft Blogs:", draftBlogs); // Log filtered draft blogs
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(allBlogCount / perPage); i++) {
+    pageNumbers.push(i);
+  }
 
   const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-      // check if there's no active session and redirect to login page
-      if (!session) {
-        router.push('/login');
-      }
-    }, [session, router]);
+    // Check if there's no active session and redirect to login page
+    if (!session) {
+      router.push("/login");
+    }
+  }, [session, router]);
 
   if (status === "loading") {
-    // loading state, loader or any other indicator
+    // Loading state, loader or any other indicator
     return (
       <div className="loadingdata flex flex-col flex-center wh_100">
         <Loading />
@@ -65,6 +63,7 @@ export default function blogs() {
       </div>
     );
   }
+
   if (session) {
     return (
       <>
@@ -72,25 +71,15 @@ export default function blogs() {
           <div className="titledashboard flex flex-sb">
             <div>
               <h2>
-                All Published <span>Blogs</span>
+                All Draft <span>Blogs</span>
               </h2>
               <h3>ADMIN PANEL</h3>
             </div>
             <div className="breadcrumb">
-              <BsPostcard /> <span>/</span> <span>Blogs</span>
+              <BsPostcard /> <span>/</span> <span>Draft Blogs</span>
             </div>
           </div>
           <div className="blogstable">
-            <div className="flex gap-2 mb-1">
-              <h2>Search Blogs:</h2>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by tittle..."
-              />
-            </div>
-
             <table className="table table-styling">
               <thead>
                 <tr>
@@ -101,7 +90,7 @@ export default function blogs() {
                 </tr>
               </thead>
               <tbody>
-              {loading ? (
+                {loading ? (
                   <tr>
                     <td>
                       <Dataloading />
@@ -109,14 +98,14 @@ export default function blogs() {
                   </tr>
                 ) : (
                   <>
-                    {publishedBlogs.length === 0 ? (
+                    {draftBlogs.length === 0 ? (
                       <tr>
                         <td colSpan="4" className="text-center">
-                          No published Blogs 
+                          No Draft Blogs
                         </td>
                       </tr>
                     ) : (
-                      publishedBlogs.map((blog, index) => (
+                      draftBlogs.map((blog, index) => (
                         <tr key={blog._id}>
                           <td>{indexOfFirstBlog +index + 1}</td>
                           <td>
@@ -146,8 +135,9 @@ export default function blogs() {
                 )}
               </tbody>
             </table>
-            {/* pagination pending start after database add... */}
-            {publishedBlogs.length > 0 && (
+
+            {/* Pagination only appears if there are draft blogs */}
+            {draftBlogs.length > 0 && (
               <div className="blogpagination">
                 <button
                   onClick={() => paginate(currentPage - 1)}

@@ -35,7 +35,7 @@ export default function blogs() {
     const currentBlogs = Array.isArray(alldata) ? alldata.slice(indexOfFirstBlog, indexOfLastBlog) : [];
   
     // Filtering the Publish blogs
-    const publishedBlogs = currentBlogs.filter((ab) => ab.status === "publish");
+    const publishedBlogs = alldata.filter((ab) => ab.status === "publish");
   
     // console.log("Publish Blogs:", publishedBlogs); // Log filtered publish blogs
   
@@ -152,7 +152,7 @@ export default function blogs() {
                 <button
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1}
-                  aria-disabled={currentPage === 1}
+          
                 >
                   Previous
                 </button>

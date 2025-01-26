@@ -95,6 +95,11 @@ export default function Blog({
             <option value="database">Database</option>
             <option value="deployment">Deployment</option>
           </select>
+          <p className="existingCategory flex gap-1 mt-1 mb-1">
+            selected: {Array.isArray(existingBlogCategory) && existingBlogCategory.map(category => 
+              (<span>category</span>))}
+            
+            </p>
         </div>
 
         {/* markdown description content */}
@@ -131,6 +136,11 @@ export default function Blog({
             <option value="reactjs">ReactJs</option>
             <option value="database">Database</option>
           </select>
+          <p className="existingTags flex gap-1 mt-1 mb-1">
+            selected: {Array.isArray(existingTags) && existingTags.map(category => 
+              (<span>Tags</span>))}
+            
+            </p>
         </div>
 
         {/* status */}
@@ -146,6 +156,9 @@ export default function Blog({
             <option value="draft">Draft</option>
             <option value="publish">Publish</option>
           </select>
+          <p className="existingStatus flex gap-1 mt-1 mb-1">
+            selected: {existingStatus}
+            </p>
         </div>
 
         {/* save Button */}
